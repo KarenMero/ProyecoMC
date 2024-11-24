@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+{% block body %}
+<SCRIPT language="JavaScript">
+  // -----------------------------------------------------------------------------//
+  // Funcion para verificar que todos los campos de un form esten bien ingresados //
+  // ---------------------------------------------------------------------------- //
+  function Verificar (formulario) {
+  if (formulario.name =="datos")
+    if(checkField(formulario.fullname, isName, false ) &&
+       checkField(formulario.phone, isPhoneNumber, false ) &&
+       checkField(formulario.email, isEmail, false )){
+      return (true);
+    }else{
+      return (false);
+   }
+  };
+  </SCRIPT>
+<div class="row">
+  <div class="col-md-5">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="card card-body">
+      <form action="/add_contact"  method="post" name "datos" onSubmit="return Verificar(this)">
+        <div class="from-group">
+          <input type="text" name="fullname" id "fullname" placeholder="fullname" class="form-control">
+          <input type="text" name="phone" id "phone" placeholder="phone" class="form-control">
+          <input type="text" name="email" id "email" placeholder="email" class="form-control">
+          <button type="submit" class="btn btn-primary btn-block btn-enviar" >
+            save
+          </button>
+        </div>  
+      </form>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <table class="table table-striped table-bordered bg-white table-sm">
+      <thead>
+        <tr>
+          <td>fullname</td>
+          <td>phone</td>
+          <td>email</td>
+          <td>operations</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contact in contacts %}
+        <tr>
+          <td>{{ contact.1 }} </td>
+          <td>{{ contact.2 }} </td>
+          <td>{{ contact.3 }} </td>
+          <td>
+            <a href="/edit/{{contact.0}}" class="btn btn-secundary">edit</a>
+            <a href="/delete/{{contact.0}}" class="btn btn-danger btn-delete">delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
