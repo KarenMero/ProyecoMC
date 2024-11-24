@@ -1,3 +1,4 @@
+#Actualizar el app.py
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
 from wsgiref.simple_server import make_server
@@ -36,6 +37,7 @@ def add_cliente():
         cur.close()
         flash('Cliente agregado satisfactoriamente')
         return redirect(url_for('index'))
+
 
 
 @app.route('/edit_cliente/<id>')
