@@ -15,39 +15,44 @@ app.secret_key = 'mysecretkey'
 
 @app.route('/')
 def index():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM cliente')  # Cambiar a cliente para obtener los datos
-    data = cur.fetchall()
-    cur.close()
-    return render_template('index.html', clientes=data)
+    return render_template('index.html')
 
 
-@app.route('/product/<int:id>')
+@app.route('/products')  # Lista de todos los productos
+def products():
+   cur = mysql.connection.cursor()
+   cur.execute('SELECT * FROM producto')  # Obtiene todos los productos
+   data = cur.fetchall()
+   cur.close()
+   return render_template('products.html', products=data)
+
+@app.route('/product/<int:id>')  # Detalles de un producto específico
 def product(id):
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM producto WHERE idProducto = %s', [id])
     data = cur.fetchone()
     cur.close()
     if data:
-        return render_template('product.html', producto=data)
+        return render_template('product.html', producto=data, edit=False)
     else:
         flash('Producto no encontrado')
-        return redirect(url_for('productos'))
+        return redirect(url_for('products'))  # Redirigir a la lista de productos
+
 
 
 @app.route('/venta')
 def venta():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM ventas')  # Supongamos que tienes una tabla "ventas"
+    cur.execute('SELECT * FROM venta_factura')  
     data = cur.fetchall()
     cur.close()
-    return render_template('venta.html', ventas=data)
+    return render_template('venta.html', venta=data)
 
 
 @app.route('/clientes')
 def clientes():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM cliente')  # Cambiar a cliente para obtener los datos
+    cur.execute('SELECT * FROM cliente')  
     data = cur.fetchall()
     cur.close()
     return render_template('clientes.html' , clientes=data)
@@ -106,124 +111,51 @@ def delete_cliente(id):
     return redirect(url_for('index'))
 
 
-@app.route('/productos')
-def productos():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM producto')  # Obtiene los productos
-    data = cur.fetchall()
-    cur.close()
-    return render_template('productos.html', productos=data)
-
-
-@app.route('/add_producto', methods=['POST'])
-def add_producto():
-    if request.method == 'POST':
-        nombreSerie = request.form['nombreSerie']
-        precio = request.form['precio']
-        stock = request.form['stock']
-        idProveedor = request.form['idProveedor']
-        cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO producto (nombreSerie, precio, stock, idProveedor) VALUES (%s, %s, %s, %s)', 
-                    (nombreSerie, precio, stock, idProveedor))
-        mysql.connection.commit()
-        cur.close()
-        flash('Producto agregado satisfactoriamente')
-        return redirect(url_for('productos'))
-
-
-@app.route('/edit_producto/<id>')
-def edit_producto(id):
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM producto WHERE idProducto = {0}'.format(id))
-    data = cur.fetchall()
-    cur.close()
-    return render_template('edit_producto.html', producto=data[0])
-
-
-@app.route('/update_producto/<id>', methods=['POST'])
-def update_producto(id):
-    if request.method == 'POST':
-        nombreSerie = request.form['nombreSerie']
-        precio = request.form['precio']
-        stock = request.form['stock']
-        idProveedor = request.form['idProveedor']
-        cur = mysql.connection.cursor()
-        cur.execute('UPDATE producto SET nombreSerie = %s, precio = %s, stock = %s, idProveedor = %s WHERE idProducto = {0}'.format(id), 
-                    (nombreSerie, precio, stock, idProveedor))
-        mysql.connection.commit()
-        cur.close()
-        flash('Producto actualizado satisfactoriamente')
-        return redirect(url_for('productos'))
-
-
-@app.route('/delete_producto/<string:id>')
-def delete_producto(id):
-    cur = mysql.connection.cursor()
-    cur.execute('DELETE FROM producto WHERE idProducto = {0}'.format(id))
-    mysql.connection.commit()
-    cur.close()
-    flash('Producto eliminado satisfactoriamente')
-    return redirect(url_for('productos'))
-
-@app.route('/add_venta', methods=['POST'])
-def add_venta():
-    if request.method == 'POST':
-        producto = request.form['producto']
-        cantidad = request.form['cantidad']
-        total = request.form['total']
-        fecha = request.form['fecha']
-        cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO ventas (producto, cantidad, total, fecha) VALUES (%s, %s, %s, %s)',
-                    (producto, cantidad, total, fecha))
-        mysql.connection.commit()
-        cur.close()
-        flash('Venta agregada satisfactoriamente')
-        return redirect(url_for('venta'))
-
-@app.route('/delete_venta/<string:id>')
-def delete_venta(id):
-    cur = mysql.connection.cursor()
-    cur.execute('DELETE FROM ventas WHERE idVenta = %s', [id])
-    mysql.connection.commit()
-    cur.close()
-    flash('Venta eliminada satisfactoriamente')
-    return redirect(url_for('venta'))
 
 @app.route('/product/edit/<int:id>', methods=['GET', 'POST'])
 def edit_product(id):
-    if request.method == 'GET':
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM producto WHERE idProducto = %s', [id])
-        data = cur.fetchone()
-        cur.close()
-        if data:
-            return render_template('product.html', producto=data, edit=True)
-        else:
-            flash('Producto no encontrado')
-            return redirect(url_for('productos'))
-    elif request.method == 'POST':
-        nombreSerie = request.form['nombreSerie']
+    cur = mysql.connection.cursor()
+    if request.method == 'POST':
+        nombre_serie = request.form['nombreSerie']
         precio = request.form['precio']
         stock = request.form['stock']
-        idProveedor = request.form['idProveedor']
-        cur = mysql.connection.cursor()
-        cur.execute(
-            'UPDATE producto SET nombreSerie = %s, precio = %s, stock = %s, idProveedor = %s WHERE idProducto = %s',
-            (nombreSerie, precio, stock, idProveedor, id)
-        )
+        id_proveedor = request.form['idProveedor']
+        
+        cur.execute('UPDATE producto SET nombreSerie = %s, precio = %s, stock = %s, idProveedor = %s WHERE idProducto = %s',
+                    (nombre_serie, precio, stock, id_proveedor, id))
         mysql.connection.commit()
         cur.close()
-        flash('Producto actualizado satisfactoriamente')
-        return redirect(url_for('productos'))
+        flash('Producto actualizado exitosamente.')
+        return redirect(url_for('product', id=id))
+    
+    cur.execute('SELECT * FROM producto WHERE idProducto = %s', [id])
+    producto = cur.fetchone()
+    cur.close()
+    if producto:
+        return render_template('product.html', producto=producto, edit=True)
+    else:
+        flash('Producto no encontrado.')
+        return redirect(url_for('product'))
 
-@app.route('/product/delete/<int:id>')
+@app.route('/product/delete/<int:id>', methods=['GET'])
 def delete_product(id):
     cur = mysql.connection.cursor()
     cur.execute('DELETE FROM producto WHERE idProducto = %s', [id])
     mysql.connection.commit()
     cur.close()
-    flash('Producto eliminado satisfactoriamente')
-    return redirect(url_for('productos'))
+    flash('Producto eliminado exitosamente.')
+    return redirect(url_for('productos'))  # Redirigir a la lista de productos
+
+
+@app.route('/edit_venta/<int:id>')
+def edit_venta(id):
+    # Lógica para editar la venta
+    pass
+
+@app.route('/delete_venta/<int:id>', methods=['POST'])
+def delete_venta(id):
+    # Lógica para eliminar la venta
+    pass
 
 
 if __name__ == '__main__':
