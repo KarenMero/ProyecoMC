@@ -22,6 +22,36 @@ def index():
     return render_template('index.html', clientes=data)
 
 
+@app.route('/product/<int:id>')
+def product(id):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM producto WHERE idProducto = %s', [id])
+    data = cur.fetchone()
+    cur.close()
+    if data:
+        return render_template('product.html', producto=data)
+    else:
+        flash('Producto no encontrado')
+        return redirect(url_for('productos'))
+
+
+@app.route('/venta')
+def venta():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM ventas')  # Supongamos que tienes una tabla "ventas"
+    data = cur.fetchall()
+    cur.close()
+    return render_template('venta.html', ventas=data)
+
+
+@app.route('/clientes')
+def clientes():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM cliente')  # Cambiar a cliente para obtener los datos
+    data = cur.fetchall()
+    cur.close()
+    return render_template('clientes.html' , clientes=data)
+
 @app.route('/add_cliente', methods=['POST'])
 def add_cliente():
     if request.method == 'POST':
@@ -130,6 +160,66 @@ def update_producto(id):
 def delete_producto(id):
     cur = mysql.connection.cursor()
     cur.execute('DELETE FROM producto WHERE idProducto = {0}'.format(id))
+    mysql.connection.commit()
+    cur.close()
+    flash('Producto eliminado satisfactoriamente')
+    return redirect(url_for('productos'))
+
+@app.route('/add_venta', methods=['POST'])
+def add_venta():
+    if request.method == 'POST':
+        producto = request.form['producto']
+        cantidad = request.form['cantidad']
+        total = request.form['total']
+        fecha = request.form['fecha']
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO ventas (producto, cantidad, total, fecha) VALUES (%s, %s, %s, %s)',
+                    (producto, cantidad, total, fecha))
+        mysql.connection.commit()
+        cur.close()
+        flash('Venta agregada satisfactoriamente')
+        return redirect(url_for('venta'))
+
+@app.route('/delete_venta/<string:id>')
+def delete_venta(id):
+    cur = mysql.connection.cursor()
+    cur.execute('DELETE FROM ventas WHERE idVenta = %s', [id])
+    mysql.connection.commit()
+    cur.close()
+    flash('Venta eliminada satisfactoriamente')
+    return redirect(url_for('venta'))
+
+@app.route('/product/edit/<int:id>', methods=['GET', 'POST'])
+def edit_product(id):
+    if request.method == 'GET':
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM producto WHERE idProducto = %s', [id])
+        data = cur.fetchone()
+        cur.close()
+        if data:
+            return render_template('product.html', producto=data, edit=True)
+        else:
+            flash('Producto no encontrado')
+            return redirect(url_for('productos'))
+    elif request.method == 'POST':
+        nombreSerie = request.form['nombreSerie']
+        precio = request.form['precio']
+        stock = request.form['stock']
+        idProveedor = request.form['idProveedor']
+        cur = mysql.connection.cursor()
+        cur.execute(
+            'UPDATE producto SET nombreSerie = %s, precio = %s, stock = %s, idProveedor = %s WHERE idProducto = %s',
+            (nombreSerie, precio, stock, idProveedor, id)
+        )
+        mysql.connection.commit()
+        cur.close()
+        flash('Producto actualizado satisfactoriamente')
+        return redirect(url_for('productos'))
+
+@app.route('/product/delete/<int:id>')
+def delete_product(id):
+    cur = mysql.connection.cursor()
+    cur.execute('DELETE FROM producto WHERE idProducto = %s', [id])
     mysql.connection.commit()
     cur.close()
     flash('Producto eliminado satisfactoriamente')
