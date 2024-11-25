@@ -6,7 +6,7 @@ from wsgiref.simple_server import make_server
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''  # Cambia si es necesario
+app.config['MYSQL_PASSWORD'] = 'Anibal22062000'  # Cambia si es necesario
 app.config['MYSQL_DB'] = 'TiendaMC'
 mysql = MySQL(app)
 

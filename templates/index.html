@@ -1,66 +1,85 @@
 {% extends 'layout.html' %}
+
 {% block body %}
 <SCRIPT language="JavaScript">
-  // -----------------------------------------------------------------------------//
-  // Funcion para verificar que todos los campos de un form esten bien ingresados //
-  // ---------------------------------------------------------------------------- //
-  function Verificar (formulario) {
-  if (formulario.name =="datos")
-    if(checkField(formulario.fullname, isName, false ) &&
-       checkField(formulario.phone, isPhoneNumber, false ) &&
-       checkField(formulario.email, isEmail, false )){
-      return (true);
-    }else{
-      return (false);
-   }
-  };
-  </SCRIPT>
+  // Función para verificar que todos los campos de un formulario estén correctamente llenados
+  function Verificar(formulario) {
+    if (formulario.name == "datos")
+      if (checkField(formulario.nombres, isName, false) &&
+          checkField(formulario.apellidos, isName, false) &&
+          checkField(formulario.telefono, isPhoneNumber, false) &&
+          checkField(formulario.correoElectronico, isEmail, false)) {
+        return true;
+      } else {
+        return false;
+      }
+  }
+</SCRIPT>
+
 <div class="row">
   <div class="col-md-5">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    {% endfor %}
+      {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
     {% endif %}
     {% endwith %}
+    
+    <!-- Formulario para agregar cliente -->
     <div class="card card-body">
-      <form action="/add_contact"  method="post" name "datos" onSubmit="return Verificar(this)">
-        <div class="from-group">
-          <input type="text" name="fullname" id "fullname" placeholder="fullname" class="form-control">
-          <input type="text" name="phone" id "phone" placeholder="phone" class="form-control">
-          <input type="text" name="email" id "email" placeholder="email" class="form-control">
-          <button type="submit" class="btn btn-primary btn-block btn-enviar" >
-            save
+      <form action="/add_cliente" method="post" name="datos" onSubmit="return Verificar(this)">
+        <div class="form-group">
+          <!-- Nombres del cliente -->
+          <input type="text" name="nombres" placeholder="Nombres" class="form-control" required>
+          
+          <!-- Apellidos del cliente -->
+          <input type="text" name="apellidos" placeholder="Apellidos" class="form-control" required>
+          
+          <!-- Dirección del cliente -->
+          <input type="text" name="direccion" placeholder="Dirección" class="form-control" required>
+          
+          <!-- Teléfono del cliente -->
+          <input type="text" name="telefono" placeholder="Teléfono" class="form-control" required>
+          
+          <!-- Correo electrónico del cliente -->
+          <input type="email" name="correoElectronico" placeholder="Correo Electrónico" class="form-control" required>
+          
+          <!-- Botón de envío -->
+          <button type="submit" class="btn btn-primary btn-block btn-enviar">
+            Guardar
           </button>
-        </div>  
+        </div>
       </form>
     </div>
   </div>
+
   <div class="col-md-7">
+    <!-- Tabla de clientes -->
     <table class="table table-striped table-bordered bg-white table-sm">
       <thead>
         <tr>
-          <td>fullname</td>
-          <td>phone</td>
-          <td>email</td>
-          <td>operations</td>
+          <td>Nombre Completo</td>
+          <td>Teléfono</td>
+          <td>Correo Electrónico</td>
+          <td>Operaciones</td>
         </tr>
       </thead>
       <tbody>
-        {% for contact in contacts %}
+        {% for cliente in clientes %}
         <tr>
-          <td>{{ contact.1 }} </td>
-          <td>{{ contact.2 }} </td>
-          <td>{{ contact.3 }} </td>
+          <td>{{ cliente[1] }} {{ cliente[2] }}</td> <!-- Nombres y apellidos -->
+          <td>{{ cliente[4] }}</td> <!-- Teléfono -->
+          <td>{{ cliente[5] }}</td> <!-- Correo electrónico -->
           <td>
-            <a href="/edit/{{contact.0}}" class="btn btn-secundary">edit</a>
-            <a href="/delete/{{contact.0}}" class="btn btn-danger btn-delete">delete</a>
+            <!-- Enlaces de operaciones -->
+            <a href="/edit_cliente/{{ cliente[0] }}" class="btn btn-secondary">Editar</a>
+            <a href="/delete_cliente/{{ cliente[0] }}" class="btn btn-danger btn-delete">Eliminar</a>
           </td>
         </tr>
         {% endfor %}
