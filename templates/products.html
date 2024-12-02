@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<SCRIPT language="JavaScript">
+  // Función para verificar que todos los campos de un formulario estén correctamente llenados
+  function Verificar(formulario) {
+    if (formulario.name == "datos")
+      if (checkField(formulario.nombreSerie, isText, false) &&
+          checkField(formulario.precio, isNumber, false) &&
+          checkField(formulario.stock, isNumber, false) &&
+          checkField(formulario.idProveedor, isNumber, false)) {
+        return true;
+      } else {
+        return false;
+      }
+  }
+</SCRIPT>
+
+<div class="row">
+  <div class="col-md-5">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    <!-- Formulario para agregar producto -->
+    <div class="card card-body">
+      <form action="/add_producto" method="post" name="datos" onSubmit="return Verificar(this)">
+        <div class="form-group">
+          <!-- Nombre del producto -->
+          <input type="text" name="nombreSerie" placeholder="Nombre del Producto" class="form-control" required>
+          
+          <!-- Precio del producto -->
+          <input type="number" name="precio" placeholder="Precio" class="form-control" required>
+          
+          <!-- Stock del producto -->
+          <input type="number" name="stock" placeholder="Stock" class="form-control" required>
+          
+          <!-- ID del proveedor -->
+          <input type="number" name="idProveedor" placeholder="ID Proveedor" class="form-control" required>
+          
+          <!-- Botón de envío -->
+          <button type="submit" class="btn btn-primary btn-block btn-enviar">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <!-- Tabla de productos -->
+    <table class="table table-striped table-bordered bg-white table-sm">
+      <thead>
+        <tr>
+          <td>ID Producto</td>
+          <td>Nombre Serie</td>
+          <td>Precio</td>
+          <td>Stock</td>
+          <td>ID Proveedor</td>
+          <td>Operaciones</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for producto in products %}
+        <tr>
+          <td>{{ producto[0] }}</td>
+          <td>{{ producto[1] }}</td>
+          <td>{{ producto[2] }}</td>
+          <td>{{ producto[3] }}</td>
+          <td>{{ producto[4] }}</td>
+          <td>
+            <!-- Enlaces de operaciones -->
+            <a href="/product/{{ producto[0] }}" class="btn btn-info">Ver</a>
+            <a href="/edit_producto/{{ producto[0] }}" class="btn btn-warning">Editar</a>
+            <a href="/delete_producto/{{ producto[0] }}" class="btn btn-danger btn-delete">Eliminar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

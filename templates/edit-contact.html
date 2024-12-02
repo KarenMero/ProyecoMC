@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="col-md-4 offset-md-4">
+    <div class="card card-body">
+        <!-- Formulario de actualización de cliente -->
+        <form action="/update_cliente/{{ cliente[0] }}" method="post"> 
+            <div class="form-group">
+                <!-- Nombre del cliente -->
+                <input type="text" name="nombres" placeholder="Nombres" value="{{ cliente[1] }}" class="form-control">
+                
+                <!-- Apellidos del cliente -->
+                <input type="text" name="apellidos" placeholder="Apellidos" value="{{ cliente[2] }}" class="form-control">
+                
+                <!-- Dirección del cliente -->
+                <input type="text" name="direccion" placeholder="Dirección" value="{{ cliente[3] }}" class="form-control">
+                
+                <!-- Teléfono del cliente -->
+                <input type="text" name="telefono" placeholder="Teléfono" value="{{ cliente[4] }}" class="form-control">
+                
+                <!-- Correo electrónico del cliente -->
+                <input type="text" name="correoElectronico" placeholder="Correo Electrónico" value="{{ cliente[5] }}" class="form-control">
+                
+                <!-- Botón de envío -->
+                <button type="submit" class="btn btn-success btn-block">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>    
+</div>
+{% endblock %}

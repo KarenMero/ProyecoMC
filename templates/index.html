@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="container-fluid bg-light vh-100" style="padding: 0;">
+  <!-- Cabecera con el nombre de la empresa -->
+  <div class="bg-primary text-white text-center py-5">
+    <h1>Bienvenidos a TiendaMC </h1>
+    <p class="lead">Comprometidos con la calidad y la excelencia</p>
+  </div>
+
+  <!-- Sección de contenido principal -->
+  <div class="container mt-5">
+    <div class="row">
+      <!-- Columna de presentación -->
+      <div class="col-md-6 mb-4">
+        <h2>¿Quiénes somos?</h2>
+        <p>
+          En TiendaMC, nos dedicamos a ofrecer soluciones innovadoras para [describir brevemente el tipo de servicios o productos que ofrece la empresa]. 
+          Con años de experiencia en el mercado, nuestro objetivo es superar las expectativas de nuestros clientes y generar un impacto positivo.
+        </p>
+      </div>
+
+      <!-- Columna de valores/servicios -->
+      <div class="col-md-6 mb-4">
+        <h2>Nuestros valores</h2>
+        <ul>
+          <li><strong>Calidad:</strong> Nos esforzamos por ofrecer los mejores productos y servicios.</li>
+          <li><strong>Innovación:</strong> Buscamos constantemente nuevas formas de mejorar y crecer.</li>
+          <li><strong>Compromiso:</strong> Estamos dedicados al éxito de nuestros clientes.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pie de página -->
+  <footer class="bg-dark text-white text-center py-3">
+    <p>&copy; 2024 TiendaMC. Todos los derechos reservados.</p>
+  </footer>
+</div>
+{% endblock %}

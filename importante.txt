@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/76538970/error-in-a-python-flask-mysql-project

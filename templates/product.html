@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Gestión de Producto</h2>
+    
+    <h3>Detalles del Producto</h3>
+    <p><strong>ID:</strong> {{ producto.idProducto }}</p>
+    <p><strong>Nombre:</strong> {{ producto.nombreSerie }}</p>
+    <p><strong>Precio:</strong> {{ producto.precio }}</p>
+    <p><strong>Stock:</strong> {{ producto.stock }}</p>
+    <p><strong>ID Proveedor:</strong> {{ producto.idProveedor }}</p>    
+
+    {% if edit %}
+    <h3>Editar Producto</h3>
+    <form method="POST" action="{{ url_for('edit_product', id=producto.idProducto) }}">
+        <div class="form-group">
+            <label for="nombreSerie">Nombre Serie</label>
+            <input type="text" class="form-control" id="nombreSerie" name="nombreSerie" value="{{ producto.nombreSerie }}" required>
+        </div>
+        <div class="form-group">
+            <label for="precio">Precio</label>
+            <input type="number" class="form-control" id="precio" name="precio" value="{{ producto.precio }}" required>
+        </div>
+        <div class="form-group">
+            <label for="stock">Stock</label>
+            <input type="number" class="form-control" id="stock" name="stock" value="{{ producto.stock }}" required>
+        </div>
+        <div class="form-group">
+            <label for="idProveedor">ID Proveedor</label>
+            <input type="number" class="form-control" id="idProveedor" name="idProveedor" value="{{ producto.idProveedor }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+    {% endif %}
+
+    <h3>Eliminar Producto</h3>
+    <a href="{{ url_for('delete_product', id=producto.idProducto) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?')">Eliminar</a>
+</div>
+{% endblock %}
