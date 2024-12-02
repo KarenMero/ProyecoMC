@@ -6,7 +6,7 @@ from wsgiref.simple_server import make_server
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Anibal22062000'  # Cambia si es necesario
+app.config['MYSQL_PASSWORD'] = 'root'  # Cambia si es necesario
 app.config['MYSQL_DB'] = 'TiendaMC'
 mysql = MySQL(app)
 
@@ -38,7 +38,28 @@ def product(id):
         flash('Producto no encontrado')
         return redirect(url_for('products'))  # Redirigir a la lista de productos
 
-
+@app.route('/add_producto', methods=['POST'])
+def add_producto():
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        nombre_serie = request.form['nombreSerie']
+        precio = request.form['precio']
+        stock = request.form['stock']
+        id_proveedor = request.form['idProveedor']
+        
+        # Conectar a la base de datos y ejecutar la inserción
+        cur = mysql.connection.cursor()
+        try:
+            cur.execute('INSERT INTO producto (nombreSerie, precio, stock, idProveedor) VALUES (%s, %s, %s, %s)', 
+                        (nombre_serie, precio, stock, id_proveedor))
+            mysql.connection.commit()  # Confirmar los cambios
+            flash('Producto agregado correctamente')  # Mensaje de éxito
+        except Exception as e:
+            mysql.connection.rollback()  # Rollback en caso de error
+            flash(f'Error al agregar producto: {e}')  # Mensaje de error
+        finally:
+            cur.close()  # Cerrar el cursor
+        return redirect(url_for('products'))  # Redirigir a la lista de productos
 
 @app.route('/venta')
 def venta():
@@ -73,8 +94,6 @@ def add_cliente():
         flash('Cliente agregado satisfactoriamente')
         return redirect(url_for('index'))
 
-
-
 @app.route('/edit_cliente/<id>')
 def edit_cliente(id):
     cur = mysql.connection.cursor()
@@ -82,7 +101,6 @@ def edit_cliente(id):
     data = cur.fetchall()
     cur.close()
     return render_template('edit_cliente.html', cliente=data[0])
-
 
 @app.route('/update_cliente/<id>', methods=['POST'])
 def update_cliente(id):
@@ -100,7 +118,6 @@ def update_cliente(id):
         flash('Cliente actualizado satisfactoriamente')
         return redirect(url_for('index'))
 
-
 @app.route('/delete_cliente/<string:id>')
 def delete_cliente(id):
     cur = mysql.connection.cursor()
@@ -109,8 +126,6 @@ def delete_cliente(id):
     cur.close()
     flash('Cliente eliminado satisfactoriamente')
     return redirect(url_for('index'))
-
-
 
 @app.route('/product/edit/<int:id>', methods=['GET', 'POST'])
 def edit_product(id):
@@ -156,7 +171,16 @@ def edit_venta(id):
 def delete_venta(id):
     # Lógica para eliminar la venta
     pass
-
+# probar la conexión a la base de datos
+@app.route('/testdb')
+def testdb():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SHOW TABLES;")
+        tables = cur.fetchall()
+        return f"Conexión exitosa: {tables}"
+    except Exception as e:
+        return f"Error al conectar: {e}"
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
